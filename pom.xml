@@ -75,6 +75,13 @@
       <version>${springfox-swagger.version}</version>
     </dependency>
 
+    <!-- Jasypt -->
+    <dependency>
+      <groupId>com.github.ulisesbocchio</groupId>
+      <artifactId>jasypt-spring-boot-starter</artifactId>
+      <version>2.1.1</version>
+    </dependency>
+
   </dependencies>
 
   <build>
