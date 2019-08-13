@@ -33,12 +33,13 @@ public class MainConfig {
   /**
    * Github client connection manager
    *
-   * @param oauthToken for authentication / authorization
+   * @param user for authentication / authorization
+   * @param pass for authentication / authorization
    * @return Github object
    */
   @Bean
-  public Github getConnectedGitHubObject(@Value("${oauth.token}") String oauthToken) {
-    Github github = new RtGithub(oauthToken);
+  public Github getConnectedGitHubObject(@Value("${user}") String user, @Value("${pass}") String pass) {
+    Github github = new RtGithub(user, pass);
     logger.info(" ---> Connection to GitHub is OK.");
     return github;
   }
