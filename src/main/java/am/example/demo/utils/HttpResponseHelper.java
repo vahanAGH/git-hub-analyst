@@ -8,10 +8,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.json.JsonObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 public class HttpResponseHelper {
+  private static final Logger logger = LoggerFactory.getLogger(HttpResponseHelper.class);
 
   /**
    * Get List of committer from commits data representing as json response
@@ -73,19 +76,18 @@ public class HttpResponseHelper {
    */
   public static void checkResponseHttpStatusCode(JsonResponse resp) {
     if (resp == null) {
+
       throw new IllegalArgumentException(" JsonResponse cannot be null ");
-
-    } else if (resp.status() == 409) {
-      String errorMsg = resp.json().readObject().getString("message", "Unexpected error ...");
-      throw new ResponseStatusException(HttpStatus.CONFLICT, errorMsg, null);
-
-    } else if (resp.status() != 200) {
-      throw new IllegalStateException(" Response status code is " + resp.status() + " but should be 200");
-
     } else {
-      //DO nothing
+      HttpStatus httpStatus = HttpStatus.resolve(resp.status());
+      if (httpStatus.is2xxSuccessful()) {
+        // Do nothing. It is success case.
+      } else {
+        String errorMsg = resp.json().readObject().getString("message", "Unexpected error ...");
+        logger.error(" Response error of Github server. HttpStatus: {} ", httpStatus);
+        throw new ResponseStatusException(httpStatus, errorMsg, null);
+      }
     }
-
   }
 
   /**

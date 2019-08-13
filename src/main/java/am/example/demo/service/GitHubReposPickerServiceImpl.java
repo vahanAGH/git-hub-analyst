@@ -3,6 +3,7 @@ package am.example.demo.service;
 import am.example.demo.model.GithubPublicRepo;
 import am.example.demo.model.ReturnRepoData;
 import am.example.demo.utils.HttpHeadersHelper;
+import am.example.demo.utils.HttpResponseHelper;
 import am.example.demo.utils.PageOrder;
 import com.jcabi.github.Github;
 import com.jcabi.http.RequestURI;
@@ -59,32 +60,33 @@ public class GitHubReposPickerServiceImpl implements GitHubReposPickerService {
   }
 
   private ReturnRepoData composeReturnSearchData(JsonResponse resp) {
+    HttpResponseHelper.checkResponseHttpStatusCode(resp);
+
     final JsonObject respAsJsonObject = resp.json().readObject();
+      JsonNumber totalCountAsJsonNumber = respAsJsonObject.getJsonNumber("total_count");
+      int totalCount = totalCountAsJsonNumber == null ? 0 : totalCountAsJsonNumber.intValue();
 
-    JsonNumber totalCountAsJsonNumber = respAsJsonObject.getJsonNumber("total_count");
-    int totalCount = totalCountAsJsonNumber == null ? 0 : totalCountAsJsonNumber.intValue();
+      boolean incompleteResults = respAsJsonObject.getBoolean("incomplete_results", false);
 
-    boolean incompleteResults = respAsJsonObject.getBoolean("incomplete_results", false);
+      final List<JsonObject> items = respAsJsonObject
+          .getJsonArray("items")
+          .getValuesAs(JsonObject.class);
 
-    final List<JsonObject> items = respAsJsonObject
-        .getJsonArray("items")
-        .getValuesAs(JsonObject.class);
+      final List<GithubPublicRepo> githubPublicRepoList = new LinkedList<>();
+      for (final JsonObject item : items) {
+        final GithubPublicRepo gpp = new GithubPublicRepo(item);
+        githubPublicRepoList.add(gpp);
+      }
 
-    final List<GithubPublicRepo> githubPublicRepoList = new LinkedList<>();
-    for (final JsonObject item : items) {
-      final GithubPublicRepo gpp = new GithubPublicRepo(item);
-      githubPublicRepoList.add(gpp);
-    }
+      List<String> linkHeader = resp.headers().get(HttpHeadersHelper.LINK);
+      if (linkHeader != null) {
 
-    List<String> linkHeader = resp.headers().get(HttpHeadersHelper.LINK);
-    if (linkHeader != null) {
+        final Map<PageOrder, String> paginationUrls = HttpHeadersHelper.transformLinkHeaderToMap(linkHeader);
+        return new ReturnRepoData(totalCount, incompleteResults, paginationUrls, githubPublicRepoList);
+      } else {
 
-      final Map<PageOrder, String> paginationUrls = HttpHeadersHelper.transformLinkHeaderToMap(linkHeader);
-      return new ReturnRepoData(totalCount, incompleteResults, paginationUrls, githubPublicRepoList);
-    } else {
-
-      return new ReturnRepoData(totalCount, incompleteResults, githubPublicRepoList);
-    }
+        return new ReturnRepoData(totalCount, incompleteResults, githubPublicRepoList);
+      }
   }
 
 
