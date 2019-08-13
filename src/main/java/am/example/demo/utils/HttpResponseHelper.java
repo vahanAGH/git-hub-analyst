@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 public class HttpResponseHelper {
+
   private static final Logger logger = LoggerFactory.getLogger(HttpResponseHelper.class);
 
   /**
