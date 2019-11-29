@@ -10,6 +10,8 @@ public interface GitHubReposPickerService {
 
   /**
    * Gather github public repos by search criteria
+   * @param repoSearchCriteria
+   * @param perPage
    *
    * @return ReturnRepoData object
    */
@@ -17,6 +19,7 @@ public interface GitHubReposPickerService {
 
   /**
    * Get repos exact by passed url
+   * @param url
    *
    * @return ReturnRepoData object
    */

@@ -17,6 +17,9 @@ public interface GitHubCommitsPickerService {
 
   /**
    * Gather commits for repo's default branch, ordinary it is master
+   * @param repoId
+   * @param perPage
+   * @param page
    *
    * @return ReturnCommitData
    */
@@ -24,6 +27,7 @@ public interface GitHubCommitsPickerService {
 
   /**
    * Gather commits using exact url
+   * @param url
    *
    * @return ReturnCommitData
    */

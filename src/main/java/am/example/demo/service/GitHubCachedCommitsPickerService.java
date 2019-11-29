@@ -7,6 +7,7 @@ public interface GitHubCachedCommitsPickerService {
 
   /**
    * Get commit authors from Github by url
+   * @param url
    *
    * @return CachedCommitterData
    * @throws IOException if fetch data is failed
